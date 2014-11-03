@@ -2,7 +2,7 @@ import serial
 from xbee import ZigBee
 import time
 
-SERIALPORT = '/dev/tty.usbserial-A602N3AY'
+SERIALPORT = '/dev/tty.usbserial-AH02QMT3'
 ser = serial.Serial(SERIALPORT, 9600)
 xbee = ZigBee(ser)
 
