@@ -1,7 +1,7 @@
 """
 Simple Xbee Series 2 Wireless Sensing
 
-This receives the raw packet data and outputs it to stdout
+This receives the raw packet data and outputs it to stdout.
 """
 import serial
 from xbee import ZigBee
@@ -14,7 +14,7 @@ counter = 0
 while True:
     try:
         data = xbee.wait_read_frame()
-        print "%d: %s" % (counter, data['samples'])
+        print data
         counter += 1
     except KeyboardInterrupt:
         break
