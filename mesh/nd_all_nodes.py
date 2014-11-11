@@ -3,10 +3,14 @@
 from glob import glob
 import signal
 import serial
+import sys
 from xbee import ZigBee
 
 COORDINATOR = 'MASTER'
-NUM_TO_FIND = 2  # the number of xbee nodes to find.
+if sys.argv and len(sys.argv) > 1:
+    NUM_TO_FIND = sys.argv[1]
+else:
+    NUM_TO_FIND = 2
 
 
 def signal_shutdown(signum, frame):
