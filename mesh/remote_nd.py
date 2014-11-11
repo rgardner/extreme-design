@@ -1,4 +1,4 @@
-""" Find first XBee on network and print its reponse and Node Identifier.  """
+"""Find first XBee on network and print its reponse and Node Identifier."""
 
 import glob
 import signal
@@ -18,7 +18,7 @@ ser = serial.Serial(SERIALPORT, 9600)
 xbee = ZigBee(ser)
 
 # Set `Node Discovery Timeout` to X * 100ms
-xbee.send('at', frame='A', command='NT', parameter='FF')
+xbee.send('at', frame='A', command='NT', parameter='\xFF')
 xbee.at(command='ND')
 
 while True:

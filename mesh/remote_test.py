@@ -20,7 +20,7 @@ SERIALPORT = glob('/dev/tty.usbserial*')[0]
 ser = serial.Serial(SERIALPORT, 9600)
 xbee = ZigBee(ser)
 
-xbee.send('at', frame='A', command='NT', parameter='FF')
+xbee.send('at', frame='A', command='NT', parameter='\xFF')
 xbee.at(command='ND')
 
 found = []
