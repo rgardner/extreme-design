@@ -1,14 +1,19 @@
+from itertools import count
+
+
 class Node(object):
     """Class that represents an XBee series 2 wireless node."""
+    _ids = count(0)
 
     node_types = {'ms': 'coordinator',
                   'es': 'environmental sensor',
                   'ls': 'light switch',
                   'pl': 'plug level sensor'}
 
-    def __init__(self, serial_addr_long):
+    def __init__(self, source_addr_long):
+        self.id = _ids.next()
         self._name = ''
-        self.serial_addr_long = serial_addr_long
+        self.source_addr_long = source_addr_long
 
     @property
     def name(self):
