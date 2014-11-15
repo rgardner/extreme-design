@@ -1,7 +1,4 @@
-import xbee
-
-
-class Node(xbee.ZigBee):
+class Node(object):
     """Class that represents an XBee series 2 wireless node."""
 
     node_types = {'ms': 'coordinator',
@@ -27,6 +24,13 @@ class Node(xbee.ZigBee):
         node = self.parse_name(name)
         for key in node:
             setattr(self, key, node[key])
+
+    def __str__(self):
+        return "%s: %s, %s, %s, %s" % (self.name, self.type, self.building,
+                                       self.floor, self.room)
+
+    def __repr__(self):
+        return self.__str__()
 
     @classmethod
     def parse_name(cls, name):
