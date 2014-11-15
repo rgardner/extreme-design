@@ -18,8 +18,8 @@ class Node(object):
         self.id = self._ids.next()
         self.name = name
         self.source_addr_long = source_addr_long
-        if self.type == self.node_types['ac']:
-            self.actuate_pin = self.ACTUATE_PIN
+        self.actuate_pin = self.ACTUATE_PIN
+        self.relay_on = False
 
     def __str__(self):
         return "%s: %s, %s, %s, %s" % (self.name, self.type, self.building,
@@ -50,8 +50,12 @@ class Node(object):
             logging.warning("noop, %s, not an actuation node", self)
             return
 
-        coordinator.remote_at(self.source_addr_long, command=self.actuate_pin,
-                              parameter='\x05')
+        if self.relay_on:
+            coordinator.remote_at(self.source_addr_long,
+                                  command=self.actuate_pin, parameter='\x04')
+        else:
+            coordinator.remote_at(self.source_addr_long,
+                                  command=self.actuate_pin, parameter='\x05')
 
     @classmethod
     def parse_name(cls, name):
