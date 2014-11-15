@@ -9,6 +9,7 @@
 import glob
 from .models import Node
 import signal
+import serial
 import sys
 import time
 import xbee
@@ -28,18 +29,20 @@ def signal_shutdown(signum, frame):
 
 
 def setup():
+    """Attach signal handler and initialize coordinator and serialport."""
     global coordinator
     global serialport
     signal.signal(signal.SIGINT, signal_shutdown)
 
     # Platform specific serialports.
     if sys.platform == 'darwin':
-        serialport = glob.glob('/dev/tty.usbserial*')[0]
+        port = glob.glob('/dev/tty.usbserial*')[0]
     elif sys.platform == 'win32':
-        serialport = 'COM9'
+        port = 'COM9'
     else:  # Raspberry Pi
-        serialport = glob.glob('/dev/ttyUSB*')
+        port = glob.glob('/dev/ttyUSB*')
 
+    serialport = serial.Serial(port)
     coordinator = xbee.ZigBee(serialport)
 
 
