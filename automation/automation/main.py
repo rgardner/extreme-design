@@ -9,6 +9,7 @@
 import glob
 from .models import Node
 import signal
+import sys
 import time
 import xbee
 
@@ -30,12 +31,22 @@ def setup():
     global coordinator
     global serialport
     signal.signal(signal.SIGINT, signal_shutdown)
-    serialport = glob.glob('/dev/tty.usbserial*')[0]
+
+    # Platform specific serialports.
+    if sys.platform == 'darwin':
+        serialport = glob.glob('/dev/tty.usbserial*')[0]
+    elif sys.platform == 'win32':
+        serialport = 'COM9'
+    else:  # Raspberry Pi
+        serialport = glob.glob('/dev/ttyUSB*')
+
     coordinator = xbee.ZigBee(serialport)
 
 
 def discover_nodes(discover_time):
     """Discover nodes on network for `time` secs."""
+    global coordinator
+
     coordinator.send('at', frame='A', command='NT', parameter='\xFF')
     coordinator.at(command='ND')
     now = time.time()
@@ -56,7 +67,7 @@ def discover_nodes(discover_time):
 
 def main():
     setup()
-    discover_nodes(DISCOVER_TIME)
+    nodes = discover_nodes(DISCOVER_TIME)
     signal_shutdown(0, None)
 
 if __name__ == '__main__':
