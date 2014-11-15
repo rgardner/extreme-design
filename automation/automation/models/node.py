@@ -1,4 +1,7 @@
-class Node(object):
+import xbee
+
+
+class Node(xbee.ZigBee):
     """Class that represents an XBee series 2 wireless node."""
 
     node_types = {'ms': 'coordinator',

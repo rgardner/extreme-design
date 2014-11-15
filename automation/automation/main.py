@@ -8,9 +8,11 @@
 """
 import glob
 import signal
+import time
 import xbee
 
 COORDINATOR_NAME = 'ms'
+DISCOVER_TIME = 10  # seconds
 coordinator = None
 serialport = None
 
@@ -31,8 +33,26 @@ def setup():
     coordinator = xbee.ZigBee(serialport)
 
 
+def discover_nodes(discover_time):
+    """Discover nodes on network for `time` secs."""
+    coordinator.send('at', frame='A', command='NT', parameter='\xFF')
+    coordinator.at(command='ND')
+    now = time.time()
+    future = now + discover_time
+    nodes = {COORDINATOR_NAME: coordinator}
+    while time.time() < future:
+        response = coordinator.wait_read_frame()
+        if ('command' not in response) or (response['command'] != 'ND'):
+            continue
+
+        name = response['parameter']['node_identifier']
+        if name not in nodes:
+            pass
+
+
 def main():
     setup()
+    discover_nodes(DISCOVER_TIME)
 
 if __name__ == '__main__':
     main()
