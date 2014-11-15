@@ -7,6 +7,7 @@
 
 """
 import glob
+from .models import Node
 import signal
 import time
 import xbee
@@ -45,14 +46,18 @@ def discover_nodes(discover_time):
         if ('command' not in response) or (response['command'] != 'ND'):
             continue
 
-        name = response['parameter']['node_identifier']
-        if name not in nodes:
-            pass
+        source_addr_long = response['source_addr_long']
+        if source_addr_long not in nodes:
+            name = response['parameter']['node_identifier']
+            nodes[source_addr_long] = Node(source_addr_long, name)
+
+    return nodes
 
 
 def main():
     setup()
     discover_nodes(DISCOVER_TIME)
+    signal_shutdown(0, None)
 
 if __name__ == '__main__':
     main()

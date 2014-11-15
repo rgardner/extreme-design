@@ -9,9 +9,9 @@ class Node(xbee.ZigBee):
                   'ls': 'light switch',
                   'pl': 'plug level sensor'}
 
-    def __init__(self, serial_addr_long):
-        self._name = ''
-        self.serial_addr_long = serial_addr_long
+    def __init__(self, source_addr_long, name):
+        self.name = name
+        self.source_addr_long = source_addr_long
 
     @property
     def name(self):
