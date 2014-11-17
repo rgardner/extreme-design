@@ -1,4 +1,5 @@
-def write_to_csv(fd, data):
+def write_to_csv(filename, packets):
     """Append data to given file."""
-    for reponse in data:
-        pass
+    with open(filename, "a") as f:
+        for packet in packets:
+            f.write(packet.to_csv)

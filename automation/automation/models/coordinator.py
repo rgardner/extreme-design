@@ -3,6 +3,7 @@ import time
 import xbee
 
 from .node import Node
+from .packet import Packet
 
 
 class Coordinator(xbee.ZigBee):
@@ -51,5 +52,6 @@ class Coordinator(xbee.ZigBee):
         responses = []
         future = time.time() + receive_time
         while time.time() < future:
-            responses.append(self.wait_read_frame())
+            packet = Packet(self.wait_read_frame())
+            responses.append(packet)
         return responses

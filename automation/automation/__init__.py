@@ -9,3 +9,4 @@ Daniel Basner
 from automation.main import main
 from automation.models import Coordinator
 from automation.models import Node
+from automation.models import Packet

@@ -16,9 +16,10 @@ from .models import Coordinator
 from .models import Node
 from .util import write_to_csv
 
-LOGGING = True  # Write to CSV files?
+LOGGING = True  # write to CSV files?
+OUTPUT_FILE = "data.csv"  # the file to write to.
 DISCOVER_TIME = 10  # seconds
-RECEIVE_TIME = 10  # seconds
+RECEIVE_TIME = 10   # seconds
 coordinator = None
 serialport = None
 
@@ -73,7 +74,7 @@ def main():
                 coordinator.actuate(node)
 
         if LOGGING:
-            write_to_csv(responses)
+            write_to_csv(OUTPUT_FILE, responses)
 
     # Halt XBee threads and close serialport.
     signal_shutdown(0, None)
