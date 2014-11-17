@@ -6,6 +6,8 @@ class Node(object):
     """Class that represents an XBee series 2 wireless node."""
 
     ACTUATE_PIN = 'D4'
+    RELAY_OPEN_PARAM = '\x05'
+    RELAY_CLOSED_PARAM = '\x04'
     _ids = count(0)
 
     node_types = {'ms': 'coordinator',
@@ -19,14 +21,19 @@ class Node(object):
         self.name = name
         self.source_addr_long = source_addr_long
         self.actuate_pin = self.ACTUATE_PIN
-        self.relay_on = False
+        self.relay_circuit_closed = False
 
     def __str__(self):
-        return "%s: %s, %s, %s, %s" % (self.name, self.type, self.building,
-                                       self.floor, self.room)
+        return "Node {0}: {1}, {2}, {3}, {4}".format(self.id, self.type,
+                                                     self.building, self.floor,
+                                                     self.room)
 
     def __repr__(self):
-        return self.__str__()
+        return ("Node {0}: Name: {1}, {2}, {3}, {4}, {5}, "
+                "relay closed: {6}".format(self.id, self.name, self.type,
+                                           self.building, self.floor,
+                                           self.room,
+                                           self.relay_circuit_closed))
 
     @property
     def name(self):
@@ -50,12 +57,14 @@ class Node(object):
             logging.warning("noop, %s, not an actuation node", self)
             return
 
-        if self.relay_on:
+        if self.relay_circuit_closed:
             coordinator.remote_at(self.source_addr_long,
-                                  command=self.actuate_pin, parameter='\x04')
+                                  command=self.actuate_pin,
+                                  parameter=self.RELAY_OPEN_PARAM)
         else:
             coordinator.remote_at(self.source_addr_long,
-                                  command=self.actuate_pin, parameter='\x05')
+                                  command=self.actuate_pin,
+                                  parameter=self.RELAY_CLOSED_PARAM)
 
     @classmethod
     def parse_name(cls, name):
