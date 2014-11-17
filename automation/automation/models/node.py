@@ -1,5 +1,4 @@
 from itertools import count
-import logging
 
 
 class Node(object):
@@ -49,22 +48,6 @@ class Node(object):
         node = self.parse_name(name)
         for key in node:
             setattr(self, key, node[key])
-
-    def actuate(self, coordinator):
-        """Toggle the device connected to this node."""
-        if self.type != self.node_types['ac']:
-            # Don't do anything if this is not an actuation node.
-            logging.warning("noop, %s, not an actuation node", self)
-            return
-
-        if self.relay_circuit_closed:
-            coordinator.remote_at(self.source_addr_long,
-                                  command=self.actuate_pin,
-                                  parameter=self.RELAY_OPEN_PARAM)
-        else:
-            coordinator.remote_at(self.source_addr_long,
-                                  command=self.actuate_pin,
-                                  parameter=self.RELAY_CLOSED_PARAM)
 
     @classmethod
     def parse_name(cls, name):
