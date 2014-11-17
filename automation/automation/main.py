@@ -7,13 +7,16 @@
 
 """
 import glob
-import signal
+import logging
 import serial
+import signal
 import sys
 
 from .models import Coordinator
 from .models import Node
+from .util import write_to_csv
 
+LOGGING = True  # Write to CSV files?
 DISCOVER_TIME = 10  # seconds
 RECEIVE_TIME = 10  # seconds
 coordinator = None
@@ -24,7 +27,10 @@ def signal_shutdown(signum, frame):
     """Always halt the xbee threads and close the serial connection."""
     global coordinator
     global serialport
+
+    logging.debug("halting coordinator threads.")
     coordinator.halt()
+    logging.debug("closing serial port.")
     serialport.close()
 
 
@@ -42,7 +48,9 @@ def setup():
     else:  # Raspberry Pi
         port = glob.glob('/dev/ttyUSB*')
 
+    logging.debug("open serial port.")
     serialport = serial.Serial(port)
+    logging.debug("initialize the coordinator.")
     coordinator = Coordinator(serialport)
 
 
@@ -57,12 +65,15 @@ def main():
 
     while True:
         # Receive sensor data from discovered nodes.
-        coordinator.receive_sensor_data(RECEIVE_TIME)
+        responses = coordinator.receive_sensor_data(RECEIVE_TIME)
 
         # Actuate nodes.
         for node in nodes:
             if node.type == Node.node_types['ac']:
                 coordinator.actuate(node)
+
+        if LOGGING:
+            write_to_csv(responses)
 
     # Halt XBee threads and close serialport.
     signal_shutdown(0, None)
