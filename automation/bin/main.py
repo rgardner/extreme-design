@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """The starting point for the automation system
 
 1. Discover nodes on network.
@@ -8,8 +9,8 @@
 """
 import logging
 
-from models import Node
-import util
+from automation import models
+from automation import util
 
 SHOULD_SAVE_DATA = True  # write to CSV files?
 DATA_FILE = "data.csv"
@@ -34,7 +35,7 @@ def main():
         # Actuate nodes.
         logging.info("Actuating nodes.")
         for source_addr_long, node in nodes.iteritems():
-            if node.type == Node.node_types['ac']:
+            if node.type == models.Node.node_types['ac']:
                 coordinator.actuate(node)
 
         if SHOULD_SAVE_DATA:
