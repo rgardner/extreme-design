@@ -34,10 +34,11 @@ class Coordinator(xbee.ZigBee):
         future = time.time() + discover_time
         while time.time() < future:
             response = self.wait_read_frame()
+            logging.debug(response)
             if ('command' not in response) or (response['command'] != 'ND'):
                 continue
 
-            source_addr_long = response['source_addr_long']
+            source_addr_long = response['parameter']['source_addr_long']
             if source_addr_long not in nodes:
                 name = response['parameter']['node_identifier']
                 if name == self.NAME:
@@ -45,6 +46,7 @@ class Coordinator(xbee.ZigBee):
                 else:
                     nodes[source_addr_long] = Node(source_addr_long, name)
 
+        logging.debug(nodes)
         return nodes
 
     def receive_sensor_data(self, receive_time):
@@ -53,5 +55,6 @@ class Coordinator(xbee.ZigBee):
         future = time.time() + receive_time
         while time.time() < future:
             packet = Packet(self.wait_read_frame())
+            logging.debug(packet)
             responses.append(packet)
         return responses

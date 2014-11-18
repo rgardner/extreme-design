@@ -12,13 +12,13 @@ import serial
 import signal
 import sys
 
-from .models import Coordinator
-from .models import Node
-from .util import write_to_csv
+from models import Coordinator
+from models import Node
+from util import write_to_csv
 
 LOGGING = True  # write to CSV files?
 OUTPUT_FILE = "data.csv"  # the file to write to.
-DISCOVER_TIME = 10  # seconds
+DISCOVER_TIME = 30  # seconds
 RECEIVE_TIME = 10   # seconds
 coordinator = None
 serialport = None
@@ -39,7 +39,16 @@ def setup():
     """Attach signal handler and initialize coordinator and serialport."""
     global coordinator
     global serialport
+
     signal.signal(signal.SIGINT, signal_shutdown)
+
+    # Enable logging on stdout.
+    logging.basicConfig(filename='automation.log', level=logging.DEBUG)
+    root = logging.getLogger()
+    root.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler(sys.stdout)  # enable for stdout
+    ch.setLevel(logging.DEBUG)
+    root.addHandler(ch)
 
     # Platform specific serialports.
     if sys.platform == 'darwin':
@@ -49,7 +58,7 @@ def setup():
     else:  # Raspberry Pi
         port = glob.glob('/dev/ttyUSB*')
 
-    logging.debug("open serial port.")
+    logging.debug("opening port: %s", port)
     serialport = serial.Serial(port)
     logging.debug("initialize the coordinator.")
     coordinator = Coordinator(serialport)
@@ -62,14 +71,16 @@ def main():
     setup()
 
     # Discover nodes with same PANID.
+    logging.info("Begin discovery for %d seconds.", DISCOVER_TIME)
     nodes = coordinator.discover_nodes(DISCOVER_TIME)
 
     while True:
         # Receive sensor data from discovered nodes.
+        logging.info("Begin receiving for %d seconds", DISCOVER_TIME)
         responses = coordinator.receive_sensor_data(RECEIVE_TIME)
 
         # Actuate nodes.
-        for node in nodes:
+        for source_addr_long, node in nodes.iteritems():
             if node.type == Node.node_types['ac']:
                 coordinator.actuate(node)
 
