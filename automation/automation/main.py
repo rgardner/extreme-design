@@ -60,7 +60,7 @@ def setup():
 
     logging.debug("opening port: %s", port)
     serialport = serial.Serial(port)
-    logging.debug("initialize the coordinator.")
+    logging.debug("initializing the coordinator.")
     coordinator = Coordinator(serialport)
 
 
@@ -71,7 +71,7 @@ def main():
     setup()
 
     # Discover nodes with same PANID.
-    logging.info("Begin discovery for %d seconds.", DISCOVER_TIME)
+    logging.info("Discovering for %d seconds.", DISCOVER_TIME)
     nodes = coordinator.discover_nodes(DISCOVER_TIME)
 
     while True:
