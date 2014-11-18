@@ -34,7 +34,7 @@ def from_csv(csv_file_path, x_index, y1_index, y2_index,device_name_index,device
 
 
 	plt.figure(1)
-	plt.title("Sensor Data")	
+	
 
 	
 	plt.subplot(211)
