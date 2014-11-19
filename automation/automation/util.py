@@ -12,9 +12,9 @@ LOG_FILE = "automation.log"
 def close_connections(coordinator, serialport):
     """Always halt the xbee threads and close the serial connection."""
 
-    logging.debug("halting coordinator threads.")
+    logging.debug("halting coordinator threads: %s.", coordinator)
     coordinator.halt()
-    logging.debug("closing serial port.")
+    logging.debug("closing serial port: %s.", serialport)
     serialport.close()
 
 
@@ -53,4 +53,4 @@ def write_to_csv(filename, packets):
     logging.debug("writing packets to file")
     with open(filename, "a") as f:
         for packet in packets:
-            f.write(packet.to_csv())
+            f.write(packet.to_csv() + "\n")

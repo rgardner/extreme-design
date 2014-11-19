@@ -59,6 +59,7 @@ class Node(object):
 
         """
         node = {}
+        name = name.lower()
         if name[0:2] not in cls.node_types:
             raise ValueError('Invalid name: unrecognized node type')
 

@@ -2,14 +2,14 @@ import time
 
 
 class Packet(dict):
-    """Dictionary wrapper for packet object."""
+    """Dictionary wrapper for packet dictionary."""
     def __init__(self, *args, **kwargs):
         self.update(*args, **kwargs)
         self['created_at'] = time.time()
 
     def to_csv(self):
         created_at = self['created_at']
-        name = self['source_addr_long']
+        name = self['source_addr_long'].__repr__()  # escape hex in string
         data = [0] * 12
 
         # Iterate over adc samples. (0 - 3)
