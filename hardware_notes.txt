@@ -1,0 +1,29 @@
+Envionmental sensor:
+
+Xbee series 2 - AT MODE
+-I don't know why it doesn't work in API mode, but I can't serial communication over DIN/DOUT using API mode.
+
+-uses same config as Kill-a-Watt xbee's. 
+
+-AD0 is used for photoresistor
+-DIN is used for arduino communication
+
+-BMP180 and DHT22 sensors are attached to the arduino.
+
+PIN 2 - DHT22 sensor
+PIN A4 and A5 - BMP180
+
+TX (arduino) -> DIN (xbee)
+RX (arduino) -> DOUT (xbee)
+
+SETUP:
+-include pic
+-Arduino
+
+NEED TO DO:
+
+-figure out why it can't work in API mode
+-figure out a way to provide the board 3.3V (DC) from a wall outlet (110V AC)
+-design a new schematic and layout
+-place onto proto-board
+-manufacture a small batch of PCB boards

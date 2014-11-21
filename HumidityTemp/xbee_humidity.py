@@ -2,7 +2,7 @@ from xbee import ZigBee
 import serial
 import struct
  
-PORT = 'COM9'
+PORT = 'COM10'
 BAUD_RATE = 9600
  
 def hex(bindata):
