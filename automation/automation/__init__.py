@@ -9,3 +9,5 @@ Daniel Basner
 from automation.models import Coordinator
 from automation.models import Node
 from automation.models import Packet
+
+from automation import Server

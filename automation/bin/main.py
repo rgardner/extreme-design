@@ -7,10 +7,12 @@
 4. Save data to csv file.
 
 """
+import atexit
 import logging
+import multiprocessing
 
-from automation import models
 from automation import util
+from automation import Server
 
 SHOULD_SAVE_DATA = True  # write to CSV files?
 DATA_FILE = "data.csv"
@@ -19,28 +21,27 @@ DISCOVER_TIME = 20  # seconds
 RECEIVE_TIME = 10   # seconds
 
 
+def shutdown_threads():
+    logging.info("Shutting down")
+    for process in multiprocessing.active_children():
+        logging.info("Shutting down process: %r", process)
+        process.terminate()
+        process.join()
+    logging.info("All done :)")
+
+
 def main():
     # Initialize coordinator and serialport.
     coordinator = util.setup()
+    atexit.register(shutdown_threads)
 
     # Discover nodes with same PANID.
     logging.info("Discovering for %d seconds.", DISCOVER_TIME)
     nodes = coordinator.discover_nodes(DISCOVER_TIME)
 
-    while True:
-        # Receive sensor data from discovered nodes.
-        logging.info("Receiving packets for %d seconds", DISCOVER_TIME)
-        responses = coordinator.receive_sensor_data(RECEIVE_TIME)
-
-        # Actuate nodes.
-        logging.info("Actuating nodes.")
-        for source_addr_long, node in nodes.iteritems():
-            coordinator.actuate(node)
-            #if node.type == models.Node.node_types['ac']:
-                #coordinator.actuate(node)
-
-        if SHOULD_SAVE_DATA:
-            util.write_to_csv(DATA_FILE, responses)
+    server = Server(coordinator)
+    logging.info("Listening for XBee packets")
+    server.start()
 
 
 if __name__ == '__main__':
