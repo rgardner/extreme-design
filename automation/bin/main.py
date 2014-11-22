@@ -10,37 +10,42 @@
 import atexit
 import logging
 import multiprocessing
+import threading
 
 from automation import util
-from automation import Server
+from automation import Server, Consumer
 
 SHOULD_SAVE_DATA = True  # write to CSV files?
 DATA_FILE = "data.csv"
 
 DISCOVER_TIME = 20  # seconds
-RECEIVE_TIME = 10   # seconds
+NUM_THREADS = 4
 
 
-def shutdown_threads():
-    logging.info("Shutting down")
-    for process in multiprocessing.active_children():
-        logging.info("Shutting down process: %r", process)
-        process.terminate()
-        process.join()
+def shutdown_threads(queue):
+    logging.info("Blocking until all tasks are done.")
+    queue.join()
     logging.info("All done :)")
 
 
 def main():
     # Initialize coordinator and serialport.
     coordinator = util.setup()
-    atexit.register(shutdown_threads)
 
-    # Discover nodes with same PANID.
-    logging.info("Discovering for %d seconds.", DISCOVER_TIME)
-    nodes = coordinator.discover_nodes(DISCOVER_TIME)
+    # Queue for XBee packets.
+    queue = multiprocessing.Queue()
+    atexit.register(shutdown_threads, queue)
 
-    server = Server(coordinator)
-    logging.info("Listening for XBee packets")
+    # Spawn threads.
+    for i in range(NUM_THREADS):
+        t = Consumer(queue)
+        t.setName("Consumer {0}".format(i))
+        t.daemon = True
+        t.start()
+
+    server = Server(coordinator, queue)
+
+    logging.info("Starting server...")
     server.start()
 
 
