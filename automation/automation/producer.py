@@ -10,13 +10,14 @@ class Server(object):
 
     """
 
-    def __init__(self, coordinator, packet_queue):
+    def __init__(self, coordinator, frame_queue):
         self.coordinator = coordinator
+        self.frame_queue = frame_queue
         self.logger = logging.getLogger('server')
-        self.packet_queue = packet_queue
 
     def start(self, discover_time, should_save_data):
         self.logger.info("Listening for packets...")
         while True:
             frame = self.coordinator.wait_read_frame()
-            self.packet_queue.put(frame)
+            self.logger.debug("Received raw frame: %s", frame)
+            self.frame_queue.put(frame)

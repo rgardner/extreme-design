@@ -10,7 +10,6 @@
 import atexit
 import logging
 import multiprocessing
-import threading
 
 from automation import util
 from automation import Server, Consumer
@@ -19,12 +18,12 @@ SHOULD_SAVE_DATA = True  # write to CSV files?
 DATA_FILE = "data.csv"
 
 DISCOVER_TIME = 20  # seconds
-NUM_THREADS = 4
+NUM_WORKERS = 4
 
 
-def shutdown_threads(queue):
+def shutdown_threads(frame_queue):
     logging.info("Blocking until all tasks are done.")
-    queue.join()
+    frame_queue.join()
     logging.info("All done :)")
 
 
@@ -33,17 +32,17 @@ def main():
     coordinator = util.setup()
 
     # Queue for XBee packets.
-    queue = multiprocessing.Queue()
-    atexit.register(shutdown_threads, queue)
+    frame_queue = multiprocessing.JoinableQueue()
+    atexit.register(shutdown_threads, frame_queue)
 
     # Spawn threads.
-    for i in range(NUM_THREADS):
-        t = Consumer(queue)
-        t.setName("Consumer {0}".format(i))
-        t.daemon = True
-        t.start()
+    for i in range(NUM_WORKERS):
+        p = Consumer(args=(i, frame_queue))
+        p.setName("Consumer {0}".format(i))
+        p.daemon = True  # run as background process
+        p.start()
 
-    server = Server(coordinator, queue)
+    server = Server(coordinator, frame_queue)
 
     logging.info("Starting server...")
     server.start()
