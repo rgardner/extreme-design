@@ -1,6 +1,7 @@
 import logging
 import multiprocessing
 
+from .models import Node
 from .models import Packet
 
 
@@ -40,18 +41,18 @@ class Consumer(multiprocessing.Process):
 
             self.frame_queue.task_done()
 
-    @classmethod
-    def handle_node_id_packet(packet):
+    def handle_node_id_packet(self, packet):
+        """Add newly discovered node to list of existing nodes."""
+        source_addr_long = packet['parameter']['source_addr_long']
+        if source_addr_long not in self.nodes:
+            name = packet['parameter']['node_identifier']
+            self.nodes[source_addr_long] = Node(source_addr_long, name)
+
+    def handle_rx_io_data_packet(self, packet):
         pass
 
-    @classmethod
-    def handle_rx_io_data_packet(cls, packet):
+    def handle_tx_status(self, packet):
         pass
 
-    @classmethod
-    def handle_tx_status(cls, packet):
-        pass
-
-    @classmethod
-    def handle_undetermined(cls, packet):
+    def handle_undetermined(self, packet):
         pass
