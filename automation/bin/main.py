@@ -15,7 +15,7 @@ from automation import util
 SHOULD_SAVE_DATA = True  # write to CSV files?
 DATA_FILE = "data.csv"
 
-DISCOVER_TIME = 30  # seconds
+DISCOVER_TIME = 20  # seconds
 RECEIVE_TIME = 10   # seconds
 
 
@@ -35,8 +35,9 @@ def main():
         # Actuate nodes.
         logging.info("Actuating nodes.")
         for source_addr_long, node in nodes.iteritems():
-            if node.type == models.Node.node_types['ac']:
-                coordinator.actuate(node)
+            coordinator.actuate(node)
+            #if node.type == models.Node.node_types['ac']:
+                #coordinator.actuate(node)
 
         if SHOULD_SAVE_DATA:
             util.write_to_csv(DATA_FILE, responses)
