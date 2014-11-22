@@ -22,6 +22,7 @@ NUM_WORKERS = 4
 def shutdown(server):
     logging.info("Shutdown initiated...")
     server.shutdown()
+    logging.info("Shutdown complete.")
 
 
 def main():

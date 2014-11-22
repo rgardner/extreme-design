@@ -1,6 +1,7 @@
 import logging
 import multiprocessing
 
+import util
 from .consumer import Consumer
 from .producer import Producer
 
@@ -10,6 +11,7 @@ class Server(object):
 
     def __init__(self, num_workers):
         self.logger = logging.getLogger('Server')
+        self.db = util.init_database_client()
         self.num_workers = num_workers
         self.frame_queue = multiprocessing.JoinableQueue()
         self._setup()
@@ -30,7 +32,7 @@ class Server(object):
         self.producer.shutdown()
         self.logger.debug("Blocking until all consumers are done...")
         self.frame_queue.join()
-        self.logger.info("All done :)")
+        self.logger.info("All consumers have terminated.")
 
     def _setup(self):
         # Setup node manager.
@@ -45,7 +47,7 @@ class Server(object):
         # Create consumers.
         self.logger.debug("Spawning consumers...")
         for i in range(self.num_workers):
-            p = Consumer(args=(self.frame_queue, self.nodes))
+            p = Consumer(args=(self.frame_queue, self.nodes, self.db))
             p.setName("Consumer {0}".format(i))
             p.daemon = True
             self.workers.append(p)

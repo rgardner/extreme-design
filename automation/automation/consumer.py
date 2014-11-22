@@ -12,8 +12,9 @@ class Consumer(multiprocessing.Process):
 
     """
 
-    def __init__(self, frame_queue, nodes):
+    def __init__(self, frame_queue, nodes, db):
         self.logger = logging.getLogger(self.name)
+        self.db = db
         self.frame_queue = frame_queue
         self.nodes = nodes
 
@@ -49,10 +50,10 @@ class Consumer(multiprocessing.Process):
             self.nodes[source_addr_long] = Node(source_addr_long, name)
 
     def handle_rx_io_data_packet(self, packet):
-        pass
+        self.db.sensor_readings.insert(packet)
 
     def handle_tx_status(self, packet):
-        pass
+        self.db.sensor_readings.insert(packet)
 
     def handle_undetermined(self, packet):
-        pass
+        self.db.sensor_readings.insert(packet)

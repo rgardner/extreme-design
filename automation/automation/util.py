@@ -1,6 +1,7 @@
 import atexit
 import glob
 import logging
+from pymongo import MongoClient
 import serial
 import sys
 
@@ -15,6 +16,10 @@ def init_logger():
     ch = logging.StreamHandler(sys.stdout)  # enable for stdout
     ch.setLevel(logging.DEBUG)
     root.addHandler(ch)
+
+
+def init_database_client():
+    return MongoClient('localhost', 27017)
 
 
 def open_serial_port():
