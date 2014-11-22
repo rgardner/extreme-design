@@ -19,9 +19,13 @@ def init_logger():
 
 def open_serial_port():
     # Platform specific serial ports.
-    if sys.platform == 'darwin':  # mac osx
-        port = glob.glob('/dev/tty.usbserial*')[0]
-    elif sys.platform == 'win32':  # windows
+    if sys.platform == 'darwin':  # Mac OSX
+        port_list = glob.glob('/dev/tty.usbserial*')
+        if len(port_list) == 0:
+            raise EnvironmentError("No available serial ports found.")
+
+        port = port_list[0]
+    elif sys.platform == 'win32':  # Windows
         port = 'COM9'
     else:  # Raspberry Pi
         port = glob.glob('/dev/ttyUSB*')[0]

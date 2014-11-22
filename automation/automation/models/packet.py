@@ -1,8 +1,6 @@
 import logging
 import time
 
-from .models import Node
-
 
 class Packet(dict):
     """Dictionary wrapper for packet dictionary."""
