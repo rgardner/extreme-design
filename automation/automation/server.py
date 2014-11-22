@@ -25,10 +25,10 @@ class Server(object):
 
     def start(self, discover_time, should_save_data):
         # Discover nodes with same PANID.
-        self.logger.info("Discovering for %d seconds.", discover_time)
+        self.logger.info("Discovering nodes for %d seconds.", discover_time)
         nodes = self.coordinator.discover_nodes(discover_time)
 
-        self.logger.info("Receiving packets for %d seconds", discover_time)
+        self.logger.info("Listening for packets...")
         while True:
             # Receive sensor data from discovered nodes.
             frame = self.coordinator.wait_read_frame()
