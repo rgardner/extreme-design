@@ -4,24 +4,11 @@ import logging
 import serial
 import sys
 
-from models import Coordinator
-
 LOG_FILE = "automation.log"
 
 
-def close_connections(coordinator, serialport):
-    """Always halt the xbee threads and close the serial connection."""
-
-    logging.debug("halting coordinator threads: %s.", coordinator)
-    coordinator.halt()
-    logging.debug("closing serial port: %s.", serialport)
-    serialport.close()
-
-
-def setup():
-    """Setup logging, open serialport, initilize coordinator."""
-
-    # Enable logging on stdout.
+def init_logger():
+    """Setup logging for file and stdout."""
     logging.basicConfig(filename=LOG_FILE, level=logging.DEBUG)
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
@@ -29,22 +16,21 @@ def setup():
     ch.setLevel(logging.DEBUG)
     root.addHandler(ch)
 
-    # Platform specific serialports.
-    if sys.platform == 'darwin':
+
+def open_serial_port():
+    # Platform specific serial ports.
+    if sys.platform == 'darwin':  # mac osx
         port = glob.glob('/dev/tty.usbserial*')[0]
-    elif sys.platform == 'win32':
+    elif sys.platform == 'win32':  # windows
         port = 'COM9'
     else:  # Raspberry Pi
         port = glob.glob('/dev/ttyUSB*')[0]
 
     logging.debug("opening port: %s", port)
-    serialport = serial.Serial(port)
-    logging.debug("initializing the coordinator.")
-    coordinator = Coordinator(serialport)
+    serial_port = serial.Serial(port)
 
-    # Halt ZigBee and close serialport at exit.
-    atexit.register(close_connections, coordinator, serialport)
-    return coordinator
+    atexit(_close_serial_port, serial_port)
+    return serial_port
 
 
 def write_to_csv(filename, packets):
@@ -54,3 +40,8 @@ def write_to_csv(filename, packets):
     with open(filename, "a") as f:
         for packet in packets:
             f.write(packet.to_csv() + "\n")
+
+
+def _close_serial_port(serial_port):
+    logging.debug("closing serial port: %s", serial_port)
+    serial_port.close()

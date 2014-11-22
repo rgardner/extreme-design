@@ -10,9 +10,11 @@ class Consumer(multiprocessing.Process):
     Handles the various types of packets.
 
     """
-    def __init__(self, pid, frame_queue):
+
+    def __init__(self, frame_queue, nodes):
+        self.logger = logging.getLogger(self.name)
         self.frame_queue = frame_queue
-        self.logger = logging.getLogger("Consumer {0}".format(pid))
+        self.nodes = nodes
 
     def run(self):
         while True:
